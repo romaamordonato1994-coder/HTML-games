@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BUZZERS</title>
+
+<style>
+/* =====================================================
+   GLOBAL & CORE STYLING
+===================================================== */
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Montserrat', "Century Gothic", Arial, sans-serif;
+    background-color: #030712;
+    color: #ffffff;
+}
+
+/* =====================================================
+   INTRO OPENING SCREEN (NEW)
+===================================================== */
+#introScreen {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    cursor: pointer;
+    background: 
+        radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.25) 0%, transparent 60%),
+        linear-gradient(135deg, #090d16 0%, #0f172a 50%, #030712 100%);
+}
+
+#introScreen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 85%);
+    pointer-events: none;
+}
+
+.intro-container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+/* Blinking/Pulsing Buzzer Light Indicator */
+.intro-buzzer-light {
+    width: clamp(80px, 12vw, 150px);
+    height: clamp(80px, 12vw, 150px);
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 35% 25%,
+        #ff7676 0%,
+        #ef4444 40%,
+        #b91c1c 75%,
+        #450a0a 100%
+    );
+    border: clamp(6px, 0.8vw, 10px) solid #7f1d1d;
+    box-shadow: 
+        0 10px 0 #3b0707,
+        0 15px 30px rgba(0, 0, 0, 0.8),
+        inset 0 6px 10px rgba(255, 255, 255, 0.6);
+    animation: buzzerLightPulse 1.2s infinite ease-in-out alternate;
+}
+
+@keyframes buzzerLightPulse {
+    0% {
+        filter: brightness(0.8);
+        box-shadow: 
+            0 10px 0 #3b0707,
+            0 10px 20px rgba(0, 0, 0, 0.8),
+            0 0 10px rgba(239, 68, 68, 0.2),
+            inset 0 4px 6px rgba(255, 255, 255, 0.4);
+        transform: scale(0.96);
+    }
+    100% {
+        filter: brightness(1.4);
+        box-shadow: 
+            0 10px 0 #3b0707,
+            0 20px 40px rgba(239, 68, 68, 0.8),
+            0 0 50px rgba(239, 68, 68, 1),
+            inset 0 8px 14px rgba(255, 255, 255, 0.9);
+        transform: scale(1.05);
+    }
+}
+
+.intro-title {
+    font-size: clamp(4rem, 12vw, 10rem);
+    font-weight: 900;
+    letter-spacing: 12px;
+    line-height: 1;
+    text-transform: uppercase;
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #fef08a 25%,
+        #f43f5e 50%,
+        #38bdf8 75%,
+        #ffffff 100%
+    );
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: logoShine 5s linear infinite;
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.8));
+}
+
+.intro-hint {
+    position: absolute;
+    bottom: 12%;
+    font-size: clamp(0.9rem, 1.5vw, 1.3rem);
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    animation: fadeInOut 1.5s infinite alternate;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+/* =====================================================
+   START SCREEN (VIBRANT ARCADE MENU)
+===================================================== */
+#startScreen {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    background: 
+        radial-gradient(circle at 15% 20%, rgba(236, 72, 153, 0.45) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.45) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.35) 0%, transparent 60%),
+        linear-gradient(135deg, #090d16 0%, #0f172a 50%, #030712 100%);
+}
+
+#startScreen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 85%);
+    pointer-events: none;
+}
+
+#startScreen::after {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(250, 204, 21, 0.25) 0%, transparent 70%);
+    filter: blur(80px);
+    animation: orbFloat 8s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes orbFloat {
+    0% { transform: translate(-100px, -100px) scale(1); }
+    100% { transform: translate(100px, 100px) scale(1.3); }
+}
+
+.start-content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 950px;
+    padding: 0 20px;
+}
+
+.game-logo {
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    font-weight: 900;
+    letter-spacing: 8px;
+    line-height: 1;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #fef08a 25%,
+        #f43f5e 50%,
+        #38bdf8 75%,
+        #ffffff 100%
+    );
+
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    animation: logoShine 5s linear infinite;
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.8));
+}
+
+@keyframes logoShine {
+    0% { background-position: 0% center; }
+    100% { background-position: 250% center; }
+}
+
+.selection-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(25px);
+    border-radius: 36px;
+    padding: 30px 25px;
+    box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.8),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.selection-section {
+    margin-bottom: 25px;
+}
+
+.choose-title {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 900;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    color: #f8fafc;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.group-options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.group-btn, .winner-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 22px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 900;
+
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(10px);
+
+    box-shadow: 
+        inset 0 2px 2px rgba(255, 255, 255, 0.5),
+        0 12px 25px rgba(0, 0, 0, 0.5);
+
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.winner-btn {
+    width: auto;
+    min-width: 95px;
+    padding: 0 16px;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+.group-btn:hover, .winner-btn:hover {
+    transform: translateY(-6px) scale(1.05);
+    border-color: #38bdf8;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.4) 0%, rgba(129, 140, 248, 0.4) 100%);
+    color: #ffffff;
+    box-shadow: 
+        0 0 25px rgba(56, 189, 248, 0.5),
+        0 15px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Selected state highlight */
+.group-btn.selected, .winner-btn.selected {
+    border-color: #facc15;
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+    color: #ffffff;
+    box-shadow: 
+        0 0 35px rgba(56, 189, 248, 0.8),
+        inset 0 0 15px rgba(255, 255, 255, 0.6);
+    transform: scale(1.08);
+}
+
+.winner-btn.selected {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-color: #6ee7b7;
+    box-shadow: 
+        0 0 35px rgba(16, 185, 129, 0.8),
+        inset 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+.start-game-btn {
+    margin-top: 20px;
+    padding: 16px 45px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    cursor: pointer;
+    box-shadow: 
+        0 10px 25px rgba(34, 197, 94, 0.5),
+        inset 0 2px 2px rgba(255, 255, 255, 0.5);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.start-game-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 
+        0 15px 35px rgba(34, 197, 94, 0.7),
+        inset 0 2px 2px rgba(255, 255, 255, 0.8);
+}
+
+.start-hint {
+    margin-top: 15px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* =====================================================
+   GAME SCREEN & ARENA (92% HEIGHT ALLOCATION)
+===================================================== */
+#gameScreen {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    background: #030712;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-container {
+    width: 100%;
+    height: 92vh; /* Maximized to 92% for optimal projector visibility */
+    display: flex;
+    background: #020617;
+    position: relative;
+}
+
+/* =====================================================
+   BUZZER SECTIONS (DYNAMIC LANES)
+===================================================== */
+.buzzer-section {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center-aligns wrapper vertically when idle */
+    user-select: none;
+    touch-action: none;
+    border-right: 2px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.4s ease, filter 0.3s ease;
+}
+
+.buzzer-section:last-child {
+    border-right: none;
+}
+
+.buzzer-section:nth-child(1) { background: linear-gradient(180deg, #0c2340 0%, #020617 100%); }
+.buzzer-section:nth-child(2) { background: linear-gradient(180deg, #3b0764 0%, #020617 100%); }
+.buzzer-section:nth-child(3) { background: linear-gradient(180deg, #064e3b 0%, #020617 100%); }
+.buzzer-section:nth-child(4) { background: linear-gradient(180deg, #451a03 0%, #020617 100%); }
+.buzzer-section:nth-child(5) { background: linear-gradient(180deg, #312e81 0%, #020617 100%); }
+.buzzer-section:nth-child(6) { background: linear-gradient(180deg, #134e4a 0%, #020617 100%); }
+
+.buzzer-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.buzzer-section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 6px;
+    border-radius: 0 0 6px 6px;
+    pointer-events: none;
+}
+
+.buzzer-section:nth-child(1)::after { background: #38bdf8; box-shadow: 0 0 20px #38bdf8; }
+.buzzer-section:nth-child(2)::after { background: #f472b6; box-shadow: 0 0 20px #f472b6; }
+.buzzer-section:nth-child(3)::after { background: #4ade80; box-shadow: 0 0 20px #4ade80; }
+.buzzer-section:nth-child(4)::after { background: #fbbf24; box-shadow: 0 0 20px #fbbf24; }
+.buzzer-section:nth-child(5)::after { background: #c084fc; box-shadow: 0 0 20px #c084fc; }
+.buzzer-section:nth-child(6)::after { background: #2dd4bf; box-shadow: 0 0 20px #2dd4bf; }
+
+/* =====================================================
+   GROUP LABELS & NUMBERS
+===================================================== */
+.group-label {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 24px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    color: #ffffff;
+    font-size: clamp(0.85rem, 1.4vw, 1.3rem);
+    font-weight: 900;
+    letter-spacing: 2px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    z-index: 10;
+    white-space: nowrap;
+}
+
+/* Dynamic Top Winner Label (Appears cleanly above the buzzer) */
+.top-winner-label {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.5);
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: clamp(1rem, 1.6vw, 1.5rem);
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    z-index: 25;
+    white-space: nowrap;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+
+.top-winner-label.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* Distinct Top Winner Themes */
+.top-winner-label.rank-1st {
+    background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+    border: 2px solid #86efac;
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.8);
+}
+.top-winner-label.rank-2nd {
+    background: linear-gradient(135deg, #0369a1 0%, #38bdf8 100%);
+    border: 2px solid #bae6fd;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.8);
+}
+.top-winner-label.rank-3rd {
+    background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+    border: 2px solid #fde68a;
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.8);
+}
+.top-winner-label.rank-4th {
+    background: linear-gradient(135deg, #7e22ce 0%, #a855f7 100%);
+    border: 2px solid #e9d5ff;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.8);
+}
+.top-winner-label.rank-5th {
+    background: linear-gradient(135deg, #be185d 0%, #f472b6 100%);
+    border: 2px solid #fbcfe8;
+    box-shadow: 0 0 25px rgba(244, 114, 182, 0.8);
+}
+
+/* =====================================================
+   MOVING BUZZER ANIMATION & PRESSED STATE
+===================================================== */
+@keyframes moveBuzzerSmooth {
+    0% { transform: translateY(calc(-1 * clamp(80px, 14vh, 160px))); }
+    50% { transform: translateY(clamp(80px, 14vh, 160px)); }
+    100% { transform: translateY(calc(-1 * clamp(80px, 14vh, 160px))); }
+}
+
+@keyframes buzzerPulseGlow {
+    0% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.2)); }
+    50% { filter: brightness(1.35) drop-shadow(0 0 25px rgba(255, 255, 255, 0.8)); }
+    100% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.2)); }
+}
+
+.buzzer-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 5;
+    animation: moveBuzzerSmooth 2.5s ease-in-out infinite;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Individually stops moving and aligns smoothly at center when clicked */
+.buzzer-wrapper.stopped {
+    animation: none !important;
+    transform: translateY(0) !important;
+}
+
+.buzzer-wrapper.pressed {
+    animation: buzzerPulseGlow 1.5s ease-in-out infinite !important;
+    transform: translateY(0) !important;
+}
+
+/* Prominent, highly legible group numbers */
+.buzzer-number {
+    font-size: clamp(3.5rem, 8vw, 8rem);
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 8px;
+    line-height: 1;
+    text-shadow: 
+        0 0 25px rgba(0, 0, 0, 0.9),
+        0 4px 0 rgba(0,0,0,0.5);
+}
+
+/* =====================================================
+   LARGE 3D ARCADE BUZZERS
+===================================================== */
+.buzzer-housing {
+    position: relative;
+    padding: 14px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #475569 0%, #0f172a 100%);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.8),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+/* Upsized Arcade Buzzer Button */
+.buzzer-icon {
+    width: clamp(130px, 14vw, 220px);
+    height: clamp(130px, 14vw, 220px);
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+
+    background: radial-gradient(
+        circle at 35% 25%,
+        #ff7676 0%,
+        #ef4444 38%,
+        #b91c1c 70%,
+        #450a0a 100%
+    );
+
+    border: clamp(8px, 0.9vw, 14px) solid #7f1d1d;
+
+    box-shadow: 
+        0 18px 0 #3b0707,
+        0 26px 45px rgba(0, 0, 0, 0.75),
+        inset 0 10px 16px rgba(255, 255, 255, 0.55),
+        inset 0 -14px 20px rgba(0, 0, 0, 0.5);
+
+    transition: transform 0.08s ease, filter 0.2s ease, box-shadow 0.08s ease;
+}
+
+.buzzer-icon::before {
+    content: "";
+    position: absolute;
+    width: 42%;
+    height: 24%;
+    top: 10%;
+    left: 18%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+    filter: blur(1.5px);
+    transform: rotate(-20deg);
+    pointer-events: none;
+}
+
+.buzzer-icon::after {
+    content: "";
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    border: 3.5px solid rgba(239, 68, 68, 0.4);
+    animation: buzzerPulse 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes buzzerPulse {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.06); }
+}
+
+.buzzer-icon:hover {
+    filter: brightness(1.15);
+    transform: scale(1.03);
+}
+
+.buzzer-icon:active {
+    transform: translateY(12px) scale(0.94);
+    box-shadow: 
+        0 6px 0 #3b0707,
+        0 10px 20px rgba(0, 0, 0, 0.5),
+        inset 0 4px 8px rgba(255, 255, 255, 0.4),
+        inset 0 -6px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* =====================================================
+   RANK INDICATORS AT THE BOTTOM (1ST - 6TH ALWAYS VISIBLE)
+===================================================== */
+.rank-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    padding: 12px 28px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: clamp(0.9rem, 1.5vw, 1.3rem);
+    font-weight: 900;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 30;
+    white-space: nowrap;
+    letter-spacing: 1px;
+}
+
+.show-rank {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.rank-1st {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+    border-color: #86efac;
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.7);
+}
+
+.rank-2nd {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+    border-color: #bae6fd;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+.rank-3rd {
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    border-color: #fde68a;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.rank-4th {
+    background: linear-gradient(135deg, #9333ea 0%, #a855f7 100%);
+    border-color: #e9d5ff;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+}
+
+.rank-5th {
+    background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+    border-color: #fbcfe8;
+    box-shadow: 0 0 20px rgba(244, 114, 182, 0.5);
+}
+
+.rank-6th {
+    background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+    border-color: #cbd5e1;
+    box-shadow: 0 0 20px rgba(100, 116, 139, 0.5);
+}
+
+/* =====================================================
+   WINNER CELEBRATIONS & STYLES
+===================================================== */
+/* 1st Place Winner */
+.winner-1 {
+    animation: winnerFlash1 0.35s infinite alternate !important;
+    z-index: 20;
+    box-shadow: inset 0 0 90px rgba(255, 255, 255, 0.8), 0 0 60px rgba(34, 197, 94, 0.9) !important;
+}
+@keyframes winnerFlash1 {
+    0% { background-color: #15803d; }
+    100% { background-color: #4ade80; }
+}
+.winner-1 .buzzer-icon {
+    background: radial-gradient(circle at 35% 25%, #86efac 0%, #22c55e 38%, #15803d 70%, #052e16 100%);
+    border-color: #14532d;
+    box-shadow: 0 18px 0 #052e16, 0 0 50px rgba(34, 197, 94, 0.9), inset 0 8px 12px rgba(255, 255, 255, 0.7);
+}
+
+/* 2nd Place Winner */
+.winner-2 {
+    animation: winnerFlash2 0.35s infinite alternate !important;
+    z-index: 19;
+    box-shadow: inset 0 0 90px rgba(255, 255, 255, 0.8), 0 0 60px rgba(56, 189, 248, 0.9) !important;
+}
+@keyframes winnerFlash2 {
+    0% { background-color: #0369a1; }
+    100% { background-color: #38bdf8; }
+}
+.winner-2 .buzzer-icon {
+    background: radial-gradient(circle at 35% 25%, #bae6fd 0%, #38bdf8 38%, #0284c7 70%, #0c4a6e 100%);
+    border-color: #075985;
+    box-shadow: 0 18px 0 #0c4a6e, 0 0 50px rgba(56, 189, 248, 0.9), inset 0 8px 12px rgba(255, 255, 255, 0.7);
+}
+
+/* 3rd Place Winner */
+.winner-3 {
+    animation: winnerFlash3 0.35s infinite alternate !important;
+    z-index: 18;
+    box-shadow: inset 0 0 90px rgba(255, 255, 255, 0.8), 0 0 60px rgba(245, 158, 11, 0.9) !important;
+}
+@keyframes winnerFlash3 {
+    0% { background-color: #b45309; }
+    100% { background-color: #fbbf24; }
+}
+.winner-3 .buzzer-icon {
+    background: radial-gradient(circle at 35% 25%, #fde68a 0%, #f59e0b 38%, #d97706 70%, #451a03 100%);
+    border-color: #78350f;
+    box-shadow: 0 18px 0 #451a03, 0 0 50px rgba(245, 158, 11, 0.9), inset 0 8px 12px rgba(255, 255, 255, 0.7);
+}
+
+/* 4th Place Winner */
+.winner-4 {
+    animation: winnerFlash4 0.35s infinite alternate !important;
+    z-index: 17;
+    box-shadow: inset 0 0 90px rgba(255, 255, 255, 0.8), 0 0 60px rgba(168, 85, 247, 0.9) !important;
+}
+@keyframes winnerFlash4 {
+    0% { background-color: #7e22ce; }
+    100% { background-color: #c084fc; }
+}
+.winner-4 .buzzer-icon {
+    background: radial-gradient(circle at 35% 25%, #e9d5ff 0%, #a855f7 38%, #7e22ce 70%, #3b0764 100%);
+    border-color: #581c87;
+    box-shadow: 0 18px 0 #3b0764, 0 0 50px rgba(168, 85, 247, 0.9), inset 0 8px 12px rgba(255, 255, 255, 0.7);
+}
+
+/* 5th Place Winner */
+.winner-5 {
+    animation: winnerFlash5 0.35s infinite alternate !important;
+    z-index: 16;
+    box-shadow: inset 0 0 90px rgba(255, 255, 255, 0.8), 0 0 60px rgba(244, 114, 182, 0.9) !important;
+}
+@keyframes winnerFlash5 {
+    0% { background-color: #be185d; }
+    100% { background-color: #f472b6; }
+}
+.winner-5 .buzzer-icon {
+    background: radial-gradient(circle at 35% 25%, #fbcfe8 0%, #ec4899 38%, #be185d 70%, #500724 100%);
+    border-color: #831843;
+    box-shadow: 0 18px 0 #500724, 0 0 50px rgba(244, 114, 182, 0.9), inset 0 8px 12px rgba(255, 255, 255, 0.7);
+}
+
+.clicked .buzzer-icon {
+    filter: grayscale(0.4) brightness(0.7);
+}
+
+.clicked {
+    opacity: 0.8;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 16px;
+    z-index: 100;
+    pointer-events: none;
+    animation: confettiFall 2.5s linear forwards;
+}
+
+@keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(850px) rotate(720deg); opacity: 0; }
+}
+
+.asar-emoji {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(4rem, 9vw, 8.5rem);
+    z-index: 200;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+    animation: emojiBurst 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes emojiBurst {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(-30deg); opacity: 0; }
+    50% { transform: translate(-50%, -50%) scale(1.4) rotate(20deg); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(-5deg); opacity: 1; }
+}
+
+/* Visual cue when round is complete */
+.round-complete-indicator {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid #ef4444;
+    color: #f8fafc;
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    z-index: 300;
+    display: none;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+    animation: fadeInDown 0.3s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* =====================================================
+   COMPACT BOTTOM CONTROL BAR (8% HEIGHT STRIP)
+===================================================== */
+.controls {
+    height: 8vh; /* Reduced height to leave maximum room for the arena */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    background: #030712;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0 15px;
+}
+
+.btn {
+    border: none;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-size: clamp(0.65rem, 0.9vw, 0.85rem);
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 38px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: none !important;
+}
+
+.reset-btn {
+    background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+    color: #422006;
+    box-shadow: 0 3px 0 #a16207;
+}
+
+.selection-btn {
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    color: white;
+    box-shadow: 0 3px 0 #6d28d9;
+}
+
+.fullscreen-btn {
+    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    color: #082f49;
+    box-shadow: 0 3px 0 #0369a1;
+}
+
+/* =====================================================
+   MOBILE & SMALL SCREEN OPTIMIZATIONS
+===================================================== */
+@media(max-width: 700px) {
+    .group-btn, .winner-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .winner-btn {
+        min-width: 75px;
+        font-size: 1rem;
+    }
+
+    .group-options {
+        gap: 8px;
+    }
+
+    .controls {
+        gap: 6px;
+        padding: 0 8px;
+    }
+
+    .btn {
+        padding: 6px 10px;
+        font-size: 0.6rem;
+        height: 32px;
+    }
+
+    @keyframes moveBuzzerSmooth {
+        0% { transform: translateY(-70px); }
+        50% { transform: translateY(70px); }
+        100% { transform: translateY(-70px); }
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     INTRO OPENING SCREEN (NEW)
+===================================================== -->
+<div id="introScreen" onclick="dismissIntro()">
+    <div class="intro-container">
+        <div class="intro-buzzer-light"></div>
+        <div class="intro-title">BUZZERS</div>
+    </div>
+    <div class="intro-hint">CLICK ANYWHERE TO ENTER</div>
+</div>
+
+<!-- =====================================================
+     START SCREEN
+===================================================== -->
+<div id="startScreen">
+    <div class="start-content">
+        <div class="game-logo">BUZZERS</div>
+
+        <div class="selection-card">
+            <!-- GROUP SELECTION -->
+            <div class="selection-section">
+                <div class="choose-title">HOW MANY GROUPS?</div>
+                <div class="group-options" id="groupsSelector">
+                    <button class="group-btn" onclick="selectGroups(2)">2</button>
+                    <button class="group-btn" onclick="selectGroups(3)">3</button>
+                    <button class="group-btn" onclick="selectGroups(4)">4</button>
+                    <button class="group-btn" onclick="selectGroups(5)">5</button>
+                    <button class="group-btn selected" onclick="selectGroups(6)">6</button>
+                </div>
+            </div>
+
+            <!-- WINNERS SELECTION -->
+            <div class="selection-section">
+                <div class="choose-title">HOW MANY TEAMS CAN EARN POINTS?</div>
+                <div class="group-options" id="winnersSelector">
+                    <!-- Populated dynamically via JS based on selected groups -->
+                </div>
+            </div>
+
+            <button class="start-game-btn" onclick="startGame()">START GAME</button>
+            <div class="start-hint">Select options and press start</div>
+        </div>
+    </div>
+</div>
+
+<!-- =====================================================
+     GAME SCREEN
+===================================================== -->
+<div id="gameScreen">
+
+    <!-- Subtle banner when all winning slots are filled -->
+    <div id="roundCompleteBanner" class="round-complete-indicator">
+        🔒 ALL WINNING SLOTS FILLED
+    </div>
+
+    <div class="game-container" id="mainGame">
+        <!-- Dynamic Buzzer Lanes Populated by JS -->
+    </div>
+
+    <!-- Compact Control Strip -->
+    <div class="controls">
+        <button class="btn reset-btn" onclick="resetGame()">
+            🔄 RESET ROUND
+        </button>
+
+        <button class="btn selection-btn" onclick="backToSelection()">
+            👥 GROUPS
+        </button>
+
+        <button class="btn fullscreen-btn" onclick="toggleFullScreen()">
+            ⛶ FULL SCREEN
+        </button>
+    </div>
+
+</div>
+
+<script>
+/* =====================================================
+   INTRO SCREEN DISMISSAL (NEW)
+===================================================== */
+function dismissIntro() {
+    const intro = document.getElementById("introScreen");
+    if (intro) {
+        intro.style.transition = "opacity 0.4s ease";
+        intro.style.opacity = "0";
+        setTimeout(() => {
+            intro.style.display = "none";
+        }, 400);
+    }
+}
+
+/* =====================================================
+   GAME ENGINE STATE
+===================================================== */
+let clickCount = 0;
+let totalGroups = 6;
+let maxWinners = 1;
+let audioCtx = null;
+
+/* =====================================================
+   START SCREEN SELECTION HANDLERS
+===================================================== */
+function selectGroups(num) {
+    totalGroups = num;
+    
+    // Highlight group button
+    const groupBtns = document.querySelectorAll("#groupsSelector .group-btn");
+    groupBtns.forEach(btn => {
+        if (parseInt(btn.innerText) === num) {
+            btn.classList.add("selected");
+        } else {
+            btn.classList.remove("selected");
+        }
+    });
+
+    // Adjust max winners if current selected maxWinners > totalGroups
+    if (maxWinners > totalGroups) {
+        maxWinners = totalGroups;
+    }
+
+    renderWinnerOptions();
+}
+
+function selectWinners(num) {
+    maxWinners = num;
+    
+    const winnerBtns = document.querySelectorAll("#winnersSelector .winner-btn");
+    winnerBtns.forEach(btn => {
+        if (btn.dataset.winnerVal == num) {
+            btn.classList.add("selected");
+        } else {
+            btn.classList.remove("selected");
+        }
+    });
+}
+
+function renderWinnerOptions() {
+    const container = document.getElementById("winnersSelector");
+    container.innerHTML = "";
+
+    for (let i = 1; i <= totalGroups; i++) {
+        const btn = document.createElement("button");
+        btn.className = "winner-btn" + (i === maxWinners ? " selected" : "");
+        btn.dataset.winnerVal = i;
+        btn.innerText = "TOP " + i;
+        btn.onclick = () => selectWinners(i);
+        container.appendChild(btn);
+    }
+}
+
+// Initial setup on screen load
+renderWinnerOptions();
+
+/* =====================================================
+   START GAME
+===================================================== */
+function startGame() {
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+
+    createBuzzers(totalGroups);
+    initializeAudio();
+    resetGame();
+}
+
+/* =====================================================
+   CREATE BUZZERS
+===================================================== */
+function createBuzzers(numberOfGroups) {
+    const game = document.getElementById("mainGame");
+    game.innerHTML = "";
+
+    for (let i = 1; i <= numberOfGroups; i++) {
+        const section = document.createElement("div");
+        section.className = "buzzer-section";
+        section.id = "sec" + i;
+
+        section.innerHTML = `
+            <div class="group-label">GROUP ${i}</div>
+            <div class="top-winner-label" id="topWinner${i}"></div>
+            <div class="rank-indicator">--</div>
+            <div class="buzzer-wrapper">
+                <div class="buzzer-number">${i}</div>
+                <div class="buzzer-housing">
+                    <div class="buzzer-icon" onpointerdown="handlePress(${i})"></div>
+                </div>
+            </div>
+        `;
+
+        game.appendChild(section);
+    }
+}
+
+/* =====================================================
+   AUDIO ENGINE (WEB AUDIO API SYNTHESIS)
+===================================================== */
+function initializeAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function playSound(freqs, durations, type = "triangle", volume = 0.15) {
+    if (!audioCtx) return;
+
+    if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+    }
+
+    freqs.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const start = audioCtx.currentTime + (i * 0.1);
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(volume, start);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + durations[i]);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(start);
+        osc.stop(start + durations[i]);
+    });
+}
+
+/* =====================================================
+   CONFETTI PARTICLES
+===================================================== */
+function createConfetti(parent) {
+    for (let i = 0; i < 70; i++) {
+        const c = document.createElement("div");
+        c.className = "confetti";
+        c.style.left = Math.random() * 100 + "%";
+        c.style.top = Math.random() * 20 + "%";
+        c.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        c.style.animationDelay = (Math.random() * 0.8) + "s";
+        c.style.width = (6 + Math.random() * 8) + "px";
+        c.style.height = (8 + Math.random() * 12) + "px";
+
+        parent.appendChild(c);
+    }
+}
+
+/* =====================================================
+   BUZZER PRESS HANDLER
+===================================================== */
+function handlePress(teamNum) {
+    const section = document.getElementById("sec" + teamNum);
+
+    // Prevent re-buzzing pressed sections
+    if (section.classList.contains("clicked") || section.className.includes("winner-")) {
+        return;
+    }
+
+    // Stop movement ONLY for this specific clicked buzzer, smoothly aligning it at center
+    const wrapper = section.querySelector(".buzzer-wrapper");
+    if (wrapper) {
+        wrapper.classList.add("stopped");
+        wrapper.classList.add("pressed");
+    }
+
+    clickCount++;
+
+    const indicator = section.querySelector(".rank-indicator");
+    let suffix;
+
+    if (clickCount === 1) suffix = "st";
+    else if (clickCount === 2) suffix = "nd";
+    else if (clickCount === 3) suffix = "rd";
+    else suffix = "th";
+
+    // Bottom Ranking (ALWAYS visible for all 1st to Nth clicks)
+    indicator.innerText = clickCount + suffix + " PLACE";
+
+    indicator.classList.remove("rank-1st", "rank-2nd", "rank-3rd", "rank-4th", "rank-5th", "rank-6th");
+    if (clickCount === 1) indicator.classList.add("rank-1st");
+    else if (clickCount === 2) indicator.classList.add("rank-2nd");
+    else if (clickCount === 3) indicator.classList.add("rank-3rd");
+    else if (clickCount === 4) indicator.classList.add("rank-4th");
+    else if (clickCount === 5) indicator.classList.add("rank-5th");
+    else indicator.classList.add("rank-6th");
+
+    indicator.classList.add("show-rank");
+
+    /* QUALIFIED WINNING POSITIONS (Show prominent TOP WINNER label ABOVE the buzzer) */
+    if (clickCount <= maxWinners) {
+        section.classList.add("winner-" + clickCount);
+
+        const topWinnerTag = section.querySelector(".top-winner-label");
+        if (topWinnerTag) {
+            const medals = ["🏆", "🥈", "🥉", "🏅", "⭐"];
+            const medal = medals[clickCount - 1] || "🏆";
+            topWinnerTag.innerText = `${medal} ${clickCount}${suffix.toUpperCase()} PLACE`;
+            topWinnerTag.classList.add("show");
+            if (clickCount === 1) topWinnerTag.classList.add("rank-1st");
+            else if (clickCount === 2) topWinnerTag.classList.add("rank-2nd");
+            else if (clickCount === 3) topWinnerTag.classList.add("rank-3rd");
+            else if (clickCount === 4) topWinnerTag.classList.add("rank-4th");
+            else if (clickCount === 5) topWinnerTag.classList.add("rank-5th");
+        }
+
+        // Confetti & Energetic Fanfare Sound
+        createConfetti(section);
+        playSound([523.25, 659.25, 783.99, 1046.50], [0.35, 0.35, 0.35, 0.8], "triangle", 0.2);
+
+        // Check if all winning slots are now filled
+        if (clickCount === maxWinners) {
+            document.getElementById("roundCompleteBanner").style.display = "block";
+        }
+    }
+    /* LAST BUZZER OF ALL GROUPS */
+    else if (clickCount === totalGroups) {
+        section.classList.add("clicked");
+
+        const emoji = document.createElement("div");
+        emoji.className = "asar-emoji";
+        emoji.innerText = "💥😛";
+        section.appendChild(emoji);
+
+        // Playful Last-Place Sound Tone
+        playSound([180, 140, 110], [0.4, 0.4, 0.6], "sawtooth", 0.22);
+    }
+    /* NON-WINNING REGULAR PRESS */
+    else {
+        section.classList.add("clicked");
+
+        // Standard Arcade Press Sound
+        playSound([300, 450], [0.15, 0.2], "square", 0.12);
+    }
+}
+
+/* =====================================================
+   RESET ROUND
+===================================================== */
+function resetGame() {
+    clickCount = 0;
+    document.getElementById("roundCompleteBanner").style.display = "none";
+
+    document.querySelectorAll(".buzzer-section").forEach(section => {
+        section.className = "buzzer-section";
+
+        const wrapper = section.querySelector(".buzzer-wrapper");
+        if (wrapper) {
+            wrapper.style.transform = ""; 
+            wrapper.classList.remove("pressed", "stopped");
+        }
+
+        const topWinnerTag = section.querySelector(".top-winner-label");
+        if (topWinnerTag) {
+            topWinnerTag.className = "top-winner-label";
+            topWinnerTag.innerText = "";
+        }
+
+        const indicator = section.querySelector(".rank-indicator");
+        indicator.classList.remove("show-rank", "rank-1st", "rank-2nd", "rank-3rd", "rank-4th", "rank-5th", "rank-6th");
+        indicator.innerText = "--";
+
+        const emoji = section.querySelector(".asar-emoji");
+        if (emoji) emoji.remove();
+
+        section.querySelectorAll(".confetti").forEach(c => c.remove());
+    });
+}
+
+/* =====================================================
+   BACK TO GROUP SELECTION
+===================================================== */
+function backToSelection() {
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("startScreen").style.display = "flex";
+
+    clickCount = 0;
+}
+
+/* =====================================================
+   FULL SCREEN TOGGLE
+===================================================== */
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+</script>
+
+</body>
+</html>
